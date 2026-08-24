@@ -16,7 +16,7 @@ async def servicenow_settings(ctx, **kwargs) -> ui.UINode:
     for c in connections:
         rows.append(ui.Stack(direction="h", gap=2, align="center", children=[
             ui.Text(f"{c.get('label') or c.get('instance_host', '')} ({c.get('auth_mode', 'basic')})", variant="body"),
-            ui.Button("Disconnect", action="disconnect_servicenow", params={"connection_id": c.get("id", "")}, variant="destructive"),
+            ui.Button("Disconnect", variant="destructive", on_click=ui.Call("disconnect_servicenow", {"connection_id": c.get("id", "")})),
         ]))
     return ui.Stack(direction="v", gap=3, align="stretch", children=[
         ui.Header(text="Connected instances", level=2),

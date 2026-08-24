@@ -29,21 +29,22 @@ async def servicenow_sidebar(ctx, **kwargs) -> ui.UINode:
                 _field("OAuth client ID (if OAuth2)", ui.Input(param_name="client_id", placeholder="Application Registry client ID")),
                 _field("OAuth client secret (if OAuth2)", ui.Input(param_name="client_secret", placeholder="Application Registry client secret", input_type="password")),
             ]),
-            ui.Button("How do I get this?", action="open_dialog", params={"dialog": "servicenow_connect_help"}, variant="ghost"),
+            ui.Button("How do I get this?", variant="ghost", size="sm", icon="HelpCircle",
+                      on_click=ui.Call("__panel__servicenow_connect_help")),
         ])
     conn = connections[0]
     label = conn.get("label") or conn.get("instance_host", "")
     return ui.Stack(direction="v", gap=2, align="stretch", children=[
         ui.Text(label, variant="subtitle"),
         ui.Divider(),
-        ui.Button("Incidents", action="open_panel", params={"panel": "servicenow_center", "view": "incidents"}, variant="ghost"),
-        ui.Button("Problems", action="open_panel", params={"panel": "servicenow_center", "view": "problems"}, variant="ghost"),
-        ui.Button("Change requests", action="open_panel", params={"panel": "servicenow_center", "view": "changes"}, variant="ghost"),
-        ui.Button("Service requests", action="open_panel", params={"panel": "servicenow_center", "view": "requests"}, variant="ghost"),
-        ui.Button("Knowledge base", action="open_panel", params={"panel": "servicenow_center", "view": "knowledge"}, variant="ghost"),
-        ui.Button("CMDB", action="open_panel", params={"panel": "servicenow_center", "view": "cmdb"}, variant="ghost"),
+        ui.Button("Incidents", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="incidents")),
+        ui.Button("Problems", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="problems")),
+        ui.Button("Change requests", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="changes")),
+        ui.Button("Service requests", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="requests")),
+        ui.Button("Knowledge base", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="knowledge")),
+        ui.Button("CMDB", variant="ghost", full_width=True, on_click=ui.Call("__panel__servicenow_center", view="cmdb")),
         ui.Divider(),
-        ui.Button("App settings", action="open_panel", params={"panel": "servicenow_settings"}, variant="ghost"),
+        ui.Button("App settings", variant="ghost", full_width=True, icon="settings", on_click=ui.Call("__panel__servicenow_settings")),
     ])
 
 
@@ -141,5 +142,5 @@ async def servicenow_center(ctx, view: str = "incidents", **kwargs) -> ui.UINode
         ]),
         ui.Divider(),
         ui.Text("Instance health", variant="subtitle"),
-        ui.Button("Run health audit", action="audit_instance_health", variant="secondary"),
+        ui.Button("Run health audit", variant="secondary", on_click=ui.Call("audit_instance_health")),
     ])

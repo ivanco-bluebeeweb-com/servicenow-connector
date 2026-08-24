@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Workday Connector">
+  <defs>
+    <linearGradient id="bg" x1="14" y1="12" x2="114" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1376B8"/>
+      <stop offset="1" stop-color="#064A78"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <path d="M30 42c7-15 19-23 34-23s27 8 34 23" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="10"/>
+  <path d="M31 53h66v42c0 8-6 14-14 14H45c-8 0-14-6-14-14V53Z" fill="#fff" fill-opacity=".17"/>
+  <path d="M46 68h36M46 82h25" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="8"/>
+</svg>

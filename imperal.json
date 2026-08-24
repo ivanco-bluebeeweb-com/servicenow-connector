@@ -1,0 +1,4380 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.11.0",
+  "app_id": "servicenow-connector",
+  "version": "0.1.0",
+  "name": "ServiceNow",
+  "description": "Connect your own ServiceNow instance (OAuth2 or Basic Auth) to manage Incidents, Problems, Change Requests, Service Catalog Requests, Knowledge Articles, and CMDB CIs through the Now Platform Table API, plus a generic table passthrough for anything else your instance exposes.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "servicenow:read",
+    "servicenow:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_servicenow",
+      "description": "Connect a ServiceNow instance via OAuth2 or Basic Auth, after validating connectivity.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "servicenow.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "Friendly instance label, e.g. 'Acme Production'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "instance_host": {
+            "description": "Instance hostname, e.g. 'acme.service-now.com'.",
+            "title": "Instance Host",
+            "type": "string"
+          },
+          "auth_mode": {
+            "default": "basic",
+            "description": "Authentication mode: 'basic' or 'oauth2'.",
+            "title": "Auth Mode",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "description": "Integration user username (required for Basic Auth).",
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "default": "",
+            "description": "Integration user password (required for Basic Auth).",
+            "title": "Password",
+            "type": "string"
+          },
+          "client_id": {
+            "default": "",
+            "description": "OAuth2 Application Registry client ID (required for OAuth2).",
+            "title": "Client Id",
+            "type": "string"
+          },
+          "client_secret": {
+            "default": "",
+            "description": "OAuth2 Application Registry client secret (required for OAuth2).",
+            "title": "Client Secret",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_host"
+        ],
+        "title": "ConnectServiceNowParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "instance_host": {
+            "title": "Instance Host",
+            "type": "string"
+          },
+          "auth_mode": {
+            "title": "Auth Mode",
+            "type": "string"
+          },
+          "connected": {
+            "default": true,
+            "title": "Connected",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "label",
+          "instance_host",
+          "auth_mode"
+        ],
+        "title": "ServiceNowConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.connect_servicenow",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "disconnect_servicenow",
+      "description": "Disconnect a ServiceNow instance: deletes only the saved credentials. Nothing in ServiceNow itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "servicenow.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Saved ServiceNow instance connection ID to remove from Imperal.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectServiceNowParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.disconnect_servicenow",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected ServiceNow instances.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ServiceNowConnection": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "label": {
+                "title": "Label",
+                "type": "string"
+              },
+              "instance_host": {
+                "title": "Instance Host",
+                "type": "string"
+              },
+              "auth_mode": {
+                "title": "Auth Mode",
+                "type": "string"
+              },
+              "connected": {
+                "default": true,
+                "title": "Connected",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "label",
+              "instance_host",
+              "auth_mode"
+            ],
+            "title": "ServiceNowConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ServiceNowConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_connections",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_incidents",
+      "description": "List incidents in the connected ServiceNow instance, optionally filtered by state/priority/assignee.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Optional incident state filter, e.g. '1' (New), '2' (In Progress), '6' (Resolved), '7' (Closed).",
+            "title": "State",
+            "type": "string"
+          },
+          "priority": {
+            "default": "",
+            "description": "Optional priority filter: '1' (Critical) through '5' (Planning).",
+            "title": "Priority",
+            "type": "string"
+          },
+          "assigned_to": {
+            "default": "",
+            "description": "Optional sys_id of the assigned user to filter by.",
+            "title": "Assigned To",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListIncidentsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Incident": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "number": {
+                "default": "",
+                "title": "Number",
+                "type": "string"
+              },
+              "short_description": {
+                "default": "",
+                "title": "Short Description",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "priority": {
+                "default": "",
+                "title": "Priority",
+                "type": "string"
+              },
+              "urgency": {
+                "default": "",
+                "title": "Urgency",
+                "type": "string"
+              },
+              "impact": {
+                "default": "",
+                "title": "Impact",
+                "type": "string"
+              },
+              "assigned_to": {
+                "default": "",
+                "title": "Assigned To",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "Incident",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "incidents": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Incident"
+            },
+            "title": "Incidents",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IncidentList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_incidents",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "get_incident",
+      "description": "Read one incident in full by sys_id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Record sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sys_id"
+        ],
+        "title": "SysIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "priority": {
+            "default": "",
+            "title": "Priority",
+            "type": "string"
+          },
+          "urgency": {
+            "default": "",
+            "title": "Urgency",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "assigned_to": {
+            "default": "",
+            "title": "Assigned To",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "Incident",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.get_incident",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "create_incident",
+      "description": "Create a new incident.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:incident"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "short_description": {
+            "description": "Short summary of the incident.",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Full description of the incident.",
+            "title": "Description",
+            "type": "string"
+          },
+          "urgency": {
+            "default": "3",
+            "description": "Urgency: '1' (High) to '3' (Low).",
+            "title": "Urgency",
+            "type": "string"
+          },
+          "impact": {
+            "default": "3",
+            "description": "Impact: '1' (High) to '3' (Low).",
+            "title": "Impact",
+            "type": "string"
+          },
+          "category": {
+            "default": "",
+            "description": "Category, e.g. 'network', 'hardware', 'software'.",
+            "title": "Category",
+            "type": "string"
+          },
+          "caller_id": {
+            "default": "",
+            "description": "sys_id of the caller/requester, if known.",
+            "title": "Caller Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_description"
+        ],
+        "title": "CreateIncidentParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "priority": {
+            "default": "",
+            "title": "Priority",
+            "type": "string"
+          },
+          "urgency": {
+            "default": "",
+            "title": "Urgency",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "assigned_to": {
+            "default": "",
+            "title": "Assigned To",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "Incident",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.create_incident",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "update_incident",
+      "description": "Update selected fields of an existing incident (state, priority, assignment, notes). Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:incident"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Incident sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "New state, e.g. '2' (In Progress), '6' (Resolved), '7' (Closed).",
+            "title": "State",
+            "type": "string"
+          },
+          "work_notes": {
+            "default": "",
+            "description": "Work note to append (internal, not customer-visible).",
+            "title": "Work Notes",
+            "type": "string"
+          },
+          "close_notes": {
+            "default": "",
+            "description": "Close notes (required by ServiceNow when resolving/closing).",
+            "title": "Close Notes",
+            "type": "string"
+          },
+          "close_code": {
+            "default": "",
+            "description": "Close code, e.g. 'Solved (Permanently)'.",
+            "title": "Close Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sys_id"
+        ],
+        "title": "UpdateIncidentParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "priority": {
+            "default": "",
+            "title": "Priority",
+            "type": "string"
+          },
+          "urgency": {
+            "default": "",
+            "title": "Urgency",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "assigned_to": {
+            "default": "",
+            "title": "Assigned To",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "Incident",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.update_incident",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_problems",
+      "description": "List problems in the connected ServiceNow instance, optionally filtered by state.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Optional problem state filter.",
+            "title": "State",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListProblemsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Problem": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "number": {
+                "default": "",
+                "title": "Number",
+                "type": "string"
+              },
+              "short_description": {
+                "default": "",
+                "title": "Short Description",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "Problem",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "problems": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Problem"
+            },
+            "title": "Problems",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ProblemList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_problems",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "create_problem",
+      "description": "Create a new problem record.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:problem"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "short_description": {
+            "description": "Short summary of the problem.",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Full description of the problem.",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_description"
+        ],
+        "title": "CreateProblemParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "Problem",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.create_problem",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "update_problem",
+      "description": "Update selected fields of an existing problem. Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:problem"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Problem sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "New state, e.g. '1' (Open), '3' (Closed/Resolved).",
+            "title": "State",
+            "type": "string"
+          },
+          "work_notes": {
+            "default": "",
+            "description": "Work note to append (internal, not customer-visible).",
+            "title": "Work Notes",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sys_id"
+        ],
+        "title": "UpdateProblemParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "Problem",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.update_problem",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_change_requests",
+      "description": "List change requests in the connected ServiceNow instance, optionally filtered by state.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Optional change request state filter.",
+            "title": "State",
+            "type": "string"
+          },
+          "approval": {
+            "default": "",
+            "description": "Optional approval status filter: 'requested', 'approved', 'rejected'.",
+            "title": "Approval",
+            "type": "string"
+          },
+          "type": {
+            "default": "",
+            "description": "Optional change type filter: 'standard', 'normal', 'emergency'.",
+            "title": "Type",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListChangeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ChangeRequest": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "number": {
+                "default": "",
+                "title": "Number",
+                "type": "string"
+              },
+              "short_description": {
+                "default": "",
+                "title": "Short Description",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "type": {
+                "default": "",
+                "title": "Type",
+                "type": "string"
+              },
+              "approval": {
+                "default": "",
+                "title": "Approval",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "ChangeRequest",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "changes": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ChangeRequest"
+            },
+            "title": "Changes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChangeRequestList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_change_requests",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "create_change_request",
+      "description": "Create a new change request.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:change_request"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "short_description": {
+            "description": "Short summary of the change.",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Full description of the change.",
+            "title": "Description",
+            "type": "string"
+          },
+          "type": {
+            "default": "normal",
+            "description": "Change type: 'standard', 'normal', or 'emergency'.",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_description"
+        ],
+        "title": "CreateChangeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "type": {
+            "default": "",
+            "title": "Type",
+            "type": "string"
+          },
+          "approval": {
+            "default": "",
+            "title": "Approval",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "ChangeRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.create_change_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "update_change_request",
+      "description": "Update selected fields of an existing change request (state, approval). Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:change_request"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Change request sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "New state value.",
+            "title": "State",
+            "type": "string"
+          },
+          "approval": {
+            "default": "",
+            "description": "New approval status: 'approved' or 'rejected'.",
+            "title": "Approval",
+            "type": "string"
+          },
+          "work_notes": {
+            "default": "",
+            "description": "Work note to append (internal, not customer-visible).",
+            "title": "Work Notes",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sys_id"
+        ],
+        "title": "UpdateChangeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "type": {
+            "default": "",
+            "title": "Type",
+            "type": "string"
+          },
+          "approval": {
+            "default": "",
+            "title": "Approval",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "ChangeRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.update_change_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_requests",
+      "description": "List Service Catalog requests in the connected ServiceNow instance, optionally filtered by state.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "Optional request state filter.",
+            "title": "State",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListRequestsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ServiceCatalogRequest": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "number": {
+                "default": "",
+                "title": "Number",
+                "type": "string"
+              },
+              "short_description": {
+                "default": "",
+                "title": "Short Description",
+                "type": "string"
+              },
+              "state": {
+                "default": "",
+                "title": "State",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "ServiceCatalogRequest",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "requests": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ServiceCatalogRequest"
+            },
+            "title": "Requests",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServiceCatalogRequestList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_requests",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "create_request",
+      "description": "Create a new Service Catalog request.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:sc_request"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "short_description": {
+            "description": "Short summary of the request.",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Full description of the request.",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_description"
+        ],
+        "title": "CreateRequestParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "ServiceCatalogRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.create_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "update_request",
+      "description": "Update selected fields of an existing Service Catalog request. Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:sc_request"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Service Catalog request sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "description": "New state value.",
+            "title": "State",
+            "type": "string"
+          },
+          "work_notes": {
+            "default": "",
+            "description": "Work note to append (internal, not customer-visible).",
+            "title": "Work Notes",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sys_id"
+        ],
+        "title": "UpdateRequestParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "short_description": {
+            "default": "",
+            "title": "Short Description",
+            "type": "string"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id"
+        ],
+        "title": "ServiceCatalogRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.update_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_knowledge_articles",
+      "description": "List Knowledge articles in the connected ServiceNow instance.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "description": "Optional free-text search against short_description.",
+            "title": "Query",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListKnowledgeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "KnowledgeArticle": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "number": {
+                "default": "",
+                "title": "Number",
+                "type": "string"
+              },
+              "short_description": {
+                "default": "",
+                "title": "Short Description",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "KnowledgeArticle",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "articles": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/KnowledgeArticle"
+            },
+            "title": "Articles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "KnowledgeArticleList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_knowledge_articles",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_cmdb_cis",
+      "description": "List Configuration Items (CIs) in the CMDB, optionally filtered by class.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "ci_class": {
+            "default": "",
+            "description": "Optional CI class table name, e.g. 'cmdb_ci_server'. Defaults to base 'cmdb_ci'.",
+            "title": "Ci Class",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "description": "Optional encoded query filter.",
+            "title": "Query",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListCmdbParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CmdbCI": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "ci_class": {
+                "default": "",
+                "title": "Ci Class",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id"
+            ],
+            "title": "CmdbCI",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "cis": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/CmdbCI"
+            },
+            "title": "Cis",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CmdbCIList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_cmdb_cis",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "list_table",
+      "description": "List records from any ServiceNow table by name -- a generic passthrough for tables not covered by typed wrappers (e.g. custom tables).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "table": {
+            "description": "Table name, e.g. 'incident', 'problem', 'change_request'.",
+            "title": "Table",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "description": "Optional ServiceNow encoded query (sysparm_query), e.g. 'active=true^priority=1'.",
+            "title": "Query",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max records to return.",
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Pagination offset.",
+            "title": "Offset",
+            "type": "integer"
+          },
+          "fields": {
+            "default": "",
+            "description": "Optional comma-separated field list to limit the response.",
+            "title": "Fields",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table"
+        ],
+        "title": "ListTableParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "TableRecord": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "sys_id": {
+                "title": "Sys Id",
+                "type": "string"
+              },
+              "table": {
+                "title": "Table",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "sys_id",
+              "table"
+            ],
+            "title": "TableRecord",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "records": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/TableRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "table"
+        ],
+        "title": "TableRecordList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.list_table",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "get_record",
+      "description": "Read one record from any ServiceNow table by sys_id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "table": {
+            "description": "Table name.",
+            "title": "Table",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Record sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "sys_id"
+        ],
+        "title": "GetRecordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id",
+          "table"
+        ],
+        "title": "TableRecord",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.get_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "create_record",
+      "description": "Create a new record on any ServiceNow table -- a generic passthrough for tables not covered by typed wrappers.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:resource"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "table": {
+            "description": "Table name.",
+            "title": "Table",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": true,
+            "description": "Field name/value pairs to set on the new record.",
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "table",
+          "fields"
+        ],
+        "title": "CreateRecordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id",
+          "table"
+        ],
+        "title": "TableRecord",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.create_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "update_record",
+      "description": "Update selected fields of an existing record on any ServiceNow table. Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:resource"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "table": {
+            "description": "Table name.",
+            "title": "Table",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Record sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": true,
+            "description": "Field name/value pairs to update.",
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "table",
+          "sys_id",
+          "fields"
+        ],
+        "title": "UpdateRecordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "sys_id": {
+            "title": "Sys Id",
+            "type": "string"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "sys_id",
+          "table"
+        ],
+        "title": "TableRecord",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.update_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "delete_record",
+      "description": "Permanently delete a record from any ServiceNow table by sys_id. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:resource"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "table": {
+            "description": "Table name.",
+            "title": "Table",
+            "type": "string"
+          },
+          "sys_id": {
+            "description": "Record sys_id.",
+            "title": "Sys Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "sys_id"
+        ],
+        "title": "DeleteRecordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.delete_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    },
+    {
+      "name": "audit_instance_health",
+      "description": "Build one aggregated health snapshot for the connected ServiceNow instance: open incidents, critical incidents, open problems, pending changes, open requests.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved ServiceNow instance connection ID. Omit to use the first connected instance.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ConnectionRefParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "open_incidents": {
+            "default": 0,
+            "title": "Open Incidents",
+            "type": "integer"
+          },
+          "critical_incidents": {
+            "default": 0,
+            "title": "Critical Incidents",
+            "type": "integer"
+          },
+          "open_problems": {
+            "default": 0,
+            "title": "Open Problems",
+            "type": "integer"
+          },
+          "pending_changes": {
+            "default": 0,
+            "title": "Pending Changes",
+            "type": "integer"
+          },
+          "open_requests": {
+            "default": 0,
+            "title": "Open Requests",
+            "type": "integer"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "HealthAudit",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "servicenow-connector.audit_instance_health",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "servicenow"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 698,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "servicenow_connections",
+      "description": "JSON list of connected ServiceNow instances and encrypted credentials. Managed only through connect_servicenow and disconnect_servicenow.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 90
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "servicenow_sidebar",
+      "slot": "left",
+      "title": "ServiceNow",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "servicenow_connect_help",
+      "slot": "overlay",
+      "title": "Connecting ServiceNow",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "servicenow_center",
+      "slot": "center",
+      "title": "ServiceNow",
+      "tree": {},
+      "icon": "Ticket",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "servicenow_settings",
+      "slot": "center",
+      "title": "ServiceNow settings",
+      "tree": {},
+      "icon": "Settings",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ]
+}

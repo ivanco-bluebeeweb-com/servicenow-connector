@@ -122,14 +122,14 @@ async def disconnect_servicenow(ctx, params: DisconnectServiceNowParams) -> Acti
     connections = await _load_connections(ctx)
     remaining = [c for c in connections if c.get("id") != params.connection_id]
     await _save_connections(ctx, remaining)
-    return ActionResult.success(data=DeleteResult(id=params.connection_id, title="ServiceNow connection", deleted=len(remaining) != len(connections)))
+    return ActionResult.success(data=DeleteResult(id=params.connection_id, title="ServiceNow connection", deleted=len(remaining) != len(connections)), summary="Servicenow disconnected.")
 
 
 @chat.function("list_connections", "List the connected ServiceNow instances.", action_type="read", chain_callable=True, data_model=ConnectionList, event="servicenow-connector.list_connections")
 async def list_connections(ctx, params: NoParams) -> ActionResult:
     """Imperal action: list_connections."""
     connections = await _load_connections(ctx)
-    return ActionResult.success(data=ConnectionList(connections=[_connection_entity(c) for c in connections]))
+    return ActionResult.success(data=ConnectionList(connections=[_connection_entity(c) for c in connections]), summary="Connections listed.")
 
 
 @chat.function("list_incidents", "List incidents in the connected ServiceNow instance, optionally filtered by state/priority/assignee.", action_type="read", chain_callable=True, data_model=IncidentList, event="servicenow-connector.list_incidents")
@@ -147,7 +147,7 @@ async def list_incidents(ctx, params: ListIncidentsParams) -> ActionResult:
         items = await client.list_table("incident", query="^".join(clauses), limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_INCIDENTS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=IncidentList(incidents=[_record_to_incident(i) for i in items]))
+    return ActionResult.success(data=IncidentList(incidents=[_record_to_incident(i) for i in items]), summary="Incidents listed.")
 
 
 @chat.function("get_incident", "Read one incident in full by sys_id.", action_type="read", chain_callable=True, data_model=Incident, event="servicenow-connector.get_incident")
@@ -160,7 +160,7 @@ async def get_incident(ctx, params: SysIdParams) -> ActionResult:
         return ActionResult.error(str(exc), code="SNOW_GET_INCIDENT_FAILED", retryable=exc.retryable)
     if not item:
         return ActionResult.error("Incident not found.", code="SNOW_INCIDENT_NOT_FOUND")
-    return ActionResult.success(data=_record_to_incident(item))
+    return ActionResult.success(data=_record_to_incident(item), summary="Incident retrieved.")
 
 
 @chat.function("create_incident", "Create a new incident.", action_type="write", chain_callable=True, data_model=Incident, event="servicenow-connector.create_incident", effects=["create:incident"])
@@ -235,7 +235,7 @@ async def list_problems(ctx, params: ListProblemsParams) -> ActionResult:
         items = await client.list_table("problem", query=query, limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_PROBLEMS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ProblemList(problems=[_record_to_problem(i) for i in items]))
+    return ActionResult.success(data=ProblemList(problems=[_record_to_problem(i) for i in items]), summary="Problems listed.")
 
 
 @chat.function("create_problem", "Create a new problem record.", action_type="write", chain_callable=True, data_model=Problem, event="servicenow-connector.create_problem", effects=["create:problem"])
@@ -281,7 +281,7 @@ async def list_change_requests(ctx, params: ListChangeParams) -> ActionResult:
         items = await client.list_table("change_request", query="^".join(clauses), limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_CHANGES_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ChangeRequestList(changes=[_record_to_change(i) for i in items]))
+    return ActionResult.success(data=ChangeRequestList(changes=[_record_to_change(i) for i in items]), summary="Change requests listed.")
 
 
 @chat.function("create_change_request", "Create a new change request.", action_type="write", chain_callable=True, data_model=ChangeRequest, event="servicenow-connector.create_change_request", effects=["create:change_request"])
@@ -325,7 +325,7 @@ async def list_requests(ctx, params: ListRequestsParams) -> ActionResult:
         items = await client.list_table("sc_request", query=query, limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_REQUESTS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ServiceCatalogRequestList(requests=[_record_to_request(i) for i in items]))
+    return ActionResult.success(data=ServiceCatalogRequestList(requests=[_record_to_request(i) for i in items]), summary="Requests listed.")
 
 
 @chat.function("create_request", "Create a new Service Catalog request.", action_type="write", chain_callable=True, data_model=ServiceCatalogRequest, event="servicenow-connector.create_request", effects=["create:sc_request"])
@@ -366,7 +366,7 @@ async def list_knowledge_articles(ctx, params: ListKnowledgeParams) -> ActionRes
         items = await client.list_table("kb_knowledge", limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_KB_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=KnowledgeArticleList(articles=[_record_to_article(i) for i in items]))
+    return ActionResult.success(data=KnowledgeArticleList(articles=[_record_to_article(i) for i in items]), summary="Knowledge articles listed.")
 
 
 @chat.function("list_cmdb_cis", "List Configuration Items (CIs) in the CMDB, optionally filtered by class.", action_type="read", chain_callable=True, data_model=CmdbCIList, event="servicenow-connector.list_cmdb_cis")
@@ -378,7 +378,7 @@ async def list_cmdb_cis(ctx, params: ListCmdbParams) -> ActionResult:
         items = await client.list_table(table, limit=params.limit)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_CMDB_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=CmdbCIList(cis=[_record_to_ci(i) for i in items]))
+    return ActionResult.success(data=CmdbCIList(cis=[_record_to_ci(i) for i in items]), summary="Cmdb cis listed.")
 
 
 @chat.function("list_table", "List records from any ServiceNow table by name -- a generic passthrough for tables not covered by typed wrappers (e.g. custom tables).", action_type="read", chain_callable=True, data_model=TableRecordList, event="servicenow-connector.list_table")
@@ -390,7 +390,7 @@ async def list_table(ctx, params: ListTableParams) -> ActionResult:
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_LIST_TABLE_FAILED", retryable=exc.retryable)
     records = [TableRecord(sys_id=str(i.get("sys_id", "")), title=str(i.get("sys_id", "")), table=params.table, raw=i) for i in items]
-    return ActionResult.success(data=TableRecordList(table=params.table, records=records))
+    return ActionResult.success(data=TableRecordList(table=params.table, records=records), summary="Table listed.")
 
 
 @chat.function("get_record", "Read one record from any ServiceNow table by sys_id.", action_type="read", chain_callable=True, data_model=TableRecord, event="servicenow-connector.get_record")
@@ -403,7 +403,7 @@ async def get_record(ctx, params: GetRecordParams) -> ActionResult:
         return ActionResult.error(str(exc), code="SNOW_GET_RECORD_FAILED", retryable=exc.retryable)
     if not item:
         return ActionResult.error("Record not found.", code="SNOW_RECORD_NOT_FOUND")
-    return ActionResult.success(data=TableRecord(sys_id=str(item.get("sys_id", "")), title=str(item.get("sys_id", "")), table=params.table, raw=item))
+    return ActionResult.success(data=TableRecord(sys_id=str(item.get("sys_id", "")), title=str(item.get("sys_id", "")), table=params.table, raw=item), summary="Record retrieved.")
 
 
 @chat.function("create_record", "Create a new record on any ServiceNow table -- a generic passthrough for tables not covered by typed wrappers.", action_type="write", chain_callable=True, data_model=TableRecord, event="servicenow-connector.create_record", effects=["create:resource"])
@@ -436,7 +436,7 @@ async def delete_record(ctx, params: DeleteRecordParams) -> ActionResult:
         await client.delete_record(params.table, params.sys_id)
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_DELETE_RECORD_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=DeleteResult(id=params.sys_id, title=params.table, deleted=True))
+    return ActionResult.success(data=DeleteResult(id=params.sys_id, title=params.table, deleted=True), summary="Record deleted.")
 
 
 @chat.function("audit_instance_health", "Build one aggregated health snapshot for the connected ServiceNow instance: open incidents, critical incidents, open problems, pending changes, open requests.", action_type="read", chain_callable=True, data_model=HealthAudit, event="servicenow-connector.audit_instance_health")
@@ -453,4 +453,4 @@ async def audit_instance_health(ctx, params: ConnectionRefParams) -> ActionResul
     except sc.ServiceNowError as exc:
         return ActionResult.error(str(exc), code="SNOW_AUDIT_FAILED", retryable=exc.retryable)
     summary = f"{open_incidents_count} open incidents ({critical} critical), {open_problems} open problems, {pending_changes} pending changes, {open_requests} open requests."
-    return ActionResult.success(data=HealthAudit(open_incidents=open_incidents_count, critical_incidents=critical, open_problems=open_problems, pending_changes=pending_changes, open_requests=open_requests, summary=summary))
+    return ActionResult.success(data=HealthAudit(open_incidents=open_incidents_count, critical_incidents=critical, open_problems=open_problems, pending_changes=pending_changes, open_requests=open_requests, summary=summary), summary="Instance health audit ready.")

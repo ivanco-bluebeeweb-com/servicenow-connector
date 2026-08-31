@@ -168,6 +168,8 @@ class BulkUpdateStateParams(ConnectionRefParams):
 # ---- SDL entities ----
 
 class ServiceNowConnection(sdl.Entity):
+    id: str = ""
+    title: str = ""
     label: str
     instance_host: str
     auth_mode: str
@@ -175,25 +177,35 @@ class ServiceNowConnection(sdl.Entity):
 
 
 class ConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[ServiceNowConnection] = []
 
 
 class DeleteResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     deleted: bool = False
 
 
 class TableRecord(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     table: str
     raw: dict = {}
 
 
 class TableRecordList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     table: str
     records: list[TableRecord] = []
 
 
 class Incident(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     number: str = ""
     short_description: str = ""
@@ -206,10 +218,14 @@ class Incident(sdl.Entity):
 
 
 class IncidentList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     incidents: list[Incident] = []
 
 
 class Problem(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     number: str = ""
     short_description: str = ""
@@ -218,10 +234,14 @@ class Problem(sdl.Entity):
 
 
 class ProblemList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     problems: list[Problem] = []
 
 
 class ChangeRequest(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     number: str = ""
     short_description: str = ""
@@ -232,10 +252,14 @@ class ChangeRequest(sdl.Entity):
 
 
 class ChangeRequestList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     changes: list[ChangeRequest] = []
 
 
 class ServiceCatalogRequest(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     number: str = ""
     short_description: str = ""
@@ -244,10 +268,14 @@ class ServiceCatalogRequest(sdl.Entity):
 
 
 class ServiceCatalogRequestList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     requests: list[ServiceCatalogRequest] = []
 
 
 class KnowledgeArticle(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     number: str = ""
     short_description: str = ""
@@ -255,10 +283,14 @@ class KnowledgeArticle(sdl.Entity):
 
 
 class KnowledgeArticleList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     articles: list[KnowledgeArticle] = []
 
 
 class CmdbCI(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     name: str = ""
     ci_class: str = ""
@@ -266,16 +298,22 @@ class CmdbCI(sdl.Entity):
 
 
 class CmdbCIList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     cis: list[CmdbCI] = []
 
 
 class Attachment(sdl.Entity):
+    id: str = ""
+    title: str = ""
     sys_id: str
     file_name: str = ""
     table: str = ""
 
 
 class HealthAudit(sdl.Entity):
+    id: str = ""
+    title: str = ""
     open_incidents: int = 0
     critical_incidents: int = 0
     open_problems: int = 0
@@ -285,6 +323,8 @@ class HealthAudit(sdl.Entity):
 
 
 class BulkOutcome(sdl.Entity):
+    id: str = ""
+    title: str = ""
     updated: int = 0
     failed: int = 0
     errors: list[str] = []
